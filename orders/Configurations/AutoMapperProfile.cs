@@ -14,7 +14,8 @@ namespace orders.Configurations
         public AutoMapperProfile()
         {
             IMappingExpression<Order, InventoryCheckRequestMessage> orderToOrderReceivedMessage =
-                CreateMap<Order, InventoryCheckRequestMessage>();
+                CreateMap<Order, InventoryCheckRequestMessage>()
+                .ForMember(msg => msg.OrderId, opt => opt.MapFrom(order => order.Id));
         }
     }
 }

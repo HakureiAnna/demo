@@ -38,9 +38,13 @@ namespace orders.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(Order order)
         {
+
+
             order.Status = Status.OrderGenerated;
             _repo.Create(order);
             await _repo.SaveChangesAsync();
+
+            Console.WriteLine($"Order received: OrderId: {order.Id}");
 
             var sendEP = await _sendEPProvider.GetSendEndpoint(new Uri($"sb://{Constants.SB_HOST}/{Constants.SB_QUEUE_IC_REQ}"));
             await sendEP.Send<InventoryCheckRequestMessage>(_mapper.Map<InventoryCheckRequestMessage>(order));

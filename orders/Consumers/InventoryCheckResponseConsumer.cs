@@ -22,7 +22,7 @@ namespace orders.Consumers
 
         public async Task Consume(ConsumeContext<InventoryCheckResponseMessage> context)
         {
-            Console.WriteLine($"Inventory Check Response: {context.Message.Succeeded}");
+            Console.WriteLine($"Inventory Check Response: OrderId: {context.Message.OrderId}, Status: {(context.Message.Succeeded? "Available": "Unavailable")}");
 
             var order = _repo.GetById(context.Message.OrderId);
             order.Status = context.Message.Succeeded ? Status.BillRequested : Status.InventoryCheckFailed;

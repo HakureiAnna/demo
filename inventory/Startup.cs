@@ -44,7 +44,9 @@ namespace inventory
             services.AddScoped<IProductRepository, ProductRepository>();
 
             services.AddControllers();
-            
+
+            services.AddSwaggerCustom("Inventory API");
+
             services.AddMassTransit(config =>
             {
                 //config.AddConsumer<FlightPurchasedConsumer>();
