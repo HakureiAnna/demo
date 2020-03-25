@@ -1,0 +1,86 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: frontend
+spec:
+  selector:
+      matchLabels:
+        app: frontend
+  replicas: 1
+  template:
+      metadata:
+        labels:
+            app: frontend
+      spec:
+        containers:
+        - name: frontend
+          image: hakureianna/frontend
+          imagePullPolicy: Always
+          readinessProbe:
+            httpGet:
+              port: 5000
+              path: /healthz
+          livenessProbe:
+            httpGet:
+              port: 5000
+              path: /healthz
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+          - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: frontend
+spec:   
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5000
+  selector:
+    app: frontend
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: frontend
+  namespace: frontend
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: frontned
+  minReplicas: 2
+  maxReplicas: 4
+  targetCPUUtilizationPercentage: 50
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: frontend
+  namespace: frontend
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  tls:
+  - hosts:
+    - frontend1.52.170.169.207.nip.io
+    secretName: frontend-tls-secret
+  rules:
+  - host: frontend1.52.170.169.207.nip.io
+    http:
+      paths:
+      - backend:
+          serviceName: frontend
+          servicePort: 80
+        path: /

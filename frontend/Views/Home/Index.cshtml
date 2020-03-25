@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "簡単なデモ用マイクロサービス";
+}
+
+<div class="text-center">
+    <h1 class="display-4">@ViewData["Title"]</h1>
+    <div class="text-left">
+        <p>
+            デモアプリケーションは、次の機能をデモします。
+            <ul>
+                <li>
+                    Azure Service Busキューとトピック/サブスクリプションを使用したマイクロサービス間の通信
+                </li>
+                <li>
+                    各マイクロサービスは、Azure SQLデータベースにホストされる独自のデータベースを使用します
+                </li>
+            </ul>
+        </p>
+        <p>
+            主なワークフローは次のとおりです。
+            <ol>
+                <li>
+                    ユーザーが[frontend]から[orders]サービスに注文する
+                </li>
+                <li>
+                    [orders]サービスが[inventory]サービスにINVENTORY_CHECK_REQUESTメッセージを送信します
+                </li>
+                <li>
+                    [inventory]ービスはメッセージを受信して​​処理し、注文した製品が利用可能かどうか、十分な在庫があるかどうかに応じて、INVENTORY_CHECK_SUCCESS / INVENTORY_CHECK_FAILで応答します。
+                </li>
+                <li>
+                    [orders]サービスが応答を受け取り、在庫確認ステータスに応じて、注文ステータスを更新するか、BILL_REQUESTを[billing]サービスに送信します。
+                </li>
+                <li>
+                    [billing]サービスはBILL_REQUESTメッセージを受信し、ランダムなチャンス（50:50）を使用して支払いをエミュレートし、BILL_SUCCESSまたはBILL_FAILで応答するかどうかを決定します
+                </li>
+                <li>
+                    [order]サービスが応答を受信し、ORDER_PROCESSメッセージをすべてのリスナーにブロードキャストします。
+                </li>
+                <li>
+                    [inventory]サービスは在庫を更新し、[accounting]サービスは領収書を作成し、[shipping]サービスは配送情報を作成します。
+                </li>
+            </ol>
+        </p>
+    </div>
+</div>
